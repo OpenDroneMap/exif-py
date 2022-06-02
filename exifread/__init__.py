@@ -13,7 +13,7 @@ from exifread.heic import HEICExifFinder
 from exifread.jpeg import find_jpeg_exif
 from exifread.exceptions import InvalidExif, ExifNotFound
 
-__version__ = '3.0.0'
+__version__ = '3.0.2'
 
 logger = get_logger()
 

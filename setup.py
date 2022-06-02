@@ -11,8 +11,8 @@ dev_requirements = [
 setup(
     name="ODMExifRead",
     version=exifread.__version__,
-    author="Ianaré Sévi",
-    author_email="ianare@gmail.com",
+    author="Ianaré Sévi,Piero Toffanin",
+    author_email="ianare@gmail.com,pt@masseranolabs.com",
     packages=find_packages(),
     scripts=["EXIF.py"],
     url="https://github.com/OpenDroneMap/exif-py",
