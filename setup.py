@@ -9,13 +9,13 @@ dev_requirements = [
 ]
 
 setup(
-    name="ExifRead",
+    name="ODMExifRead",
     version=exifread.__version__,
     author="Ianaré Sévi",
     author_email="ianare@gmail.com",
     packages=find_packages(),
     scripts=["EXIF.py"],
-    url="https://github.com/ianare/exif-py",
+    url="https://github.com/OpenDroneMap/exif-py",
     license="BSD",
     keywords="exif image metadata photo",
     description=" ".join(exifread.__doc__.splitlines()).strip(),
