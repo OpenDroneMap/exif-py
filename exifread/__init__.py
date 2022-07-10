@@ -176,7 +176,10 @@ def process_file(fh: BinaryIO, stop_tag=DEFAULT_STOP_TAG,
     # (Some apps use MakerNote tags but do not use a format for which we
     # have a description, do not process these).
     if details and 'EXIF MakerNote' in hdr.tags and 'Image Make' in hdr.tags:
-        hdr.decode_maker_note()
+        try:
+            hdr.decode_maker_note()
+        except:
+            pass
 
     # extract thumbnails
     if details and thumb_ifd and extract_thumbnail:
