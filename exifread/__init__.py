@@ -13,7 +13,7 @@ from exifread.heic import HEICExifFinder
 from exifread.jpeg import find_jpeg_exif
 from exifread.exceptions import InvalidExif, ExifNotFound
 
-__version__ = '3.0.4'
+__version__ = '3.1.0'
 
 logger = get_logger()
 
@@ -39,6 +39,7 @@ def _find_webp_exif(fh: BinaryIO) -> tuple:
             if len(data) != 8:
                 raise InvalidExif("Invalid webp file chunk header.")
             if data[0:4] == b'EXIF':
+                fh.seek(6, 1)
                 offset = fh.tell()
                 endian = fh.read(1)
                 return offset, endian
@@ -115,7 +116,6 @@ def _determine_type(fh: BinaryIO) -> tuple:
     elif data[0:8] == b'\x89PNG\r\n\x1a\n':
         offset, endian = _find_png_exif(fh, data)
     else:
-        # file format not recognized
         raise ExifNotFound("File format not recognized.")
     return offset, endian, fake_exif
 
@@ -182,7 +182,7 @@ def process_file(fh: BinaryIO, stop_tag=DEFAULT_STOP_TAG,
             pass
 
     # extract thumbnails
-    if details and thumb_ifd and extract_thumbnail:
+    if details or (thumb_ifd and extract_thumbnail):
         hdr.extract_tiff_thumbnail(thumb_ifd)
         hdr.extract_jpeg_thumbnail()
 
