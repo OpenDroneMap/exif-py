@@ -2,7 +2,26 @@
 EXIF.py
 *******
 
+.. image:: https://img.shields.io/github/license/ianare/exif-py
+    :target: https://opensource.org/license/bsd-3-clause
+    :alt: BSD-3-clause
+.. image:: https://img.shields.io/pypi/v/ExifRead
+    :target: https://pypi.org/project/ExifRead
+    :alt: PyPi
+.. image:: https://img.shields.io/pypi/dm/ExifRead
+    :target: https://opensource.org/license/bsd-3-clause
+    :alt: BSD-3-clause
+.. image:: http://www.mypy-lang.org/static/mypy_badge.svg
+    :target: http://mypy-lang.org/
+    :alt: Checked with mypy
+.. image:: https://img.shields.io/github/actions/workflow/status/ianare/exif-py/test.yml
+    :target: https://github.com/ianare/exif-py
+    :alt: Tests
+|
+
 Easy to use Python module to extract Exif metadata from digital image files.
+
+Pure Python, lightweight, no dependencies.
 
 Supported formats: TIFF, JPEG, PNG, Webp, HEIC
 
@@ -10,11 +29,7 @@ Supported formats: TIFF, JPEG, PNG, Webp, HEIC
 Compatibility
 *************
 
-EXIF.py is tested and officially supported on Python 3.5 to 3.10
-
-Starting with version ``3.0.0``, Python2 compatibility is dropped *completely* (syntax errors due to type hinting).
-
-https://pythonclock.org/
+EXIF.py is tested and officially supported on Python 3.7 to 3.13
 
 
 Installation
@@ -36,9 +51,9 @@ Development Version
 
 After cloning the repo, use the provided Makefile::
 
-  make venv reqs-install
+  make venv install-all
 
-Which will install a virtual environment and install development dependencies.
+Which will create a virtual environment and install development dependencies.
 
 Usage
 *****
@@ -62,25 +77,26 @@ Python Script
 .. code-block:: python
 
     import exifread
-    # Open image file for reading (must be in binary mode)
-    f = open(path_name, 'rb')
 
-    # Return Exif tags
-    tags = exifread.process_file(f)
+    # Open image file for reading (must be in binary mode)
+    with open(file_path, "rb") as file_handle:
+
+        # Return Exif tags
+        tags = exifread.process_file(file_handle)
 
 *Note:* To use this library in your project as a Git submodule, you should::
 
     from <submodule_folder> import exifread
 
 Returned tags will be a dictionary mapping names of Exif tags to their
-values in the file named by path_name.
+values in the file named by ``file_path``.
 You can process the tags as you wish. In particular, you can iterate through all the tags with:
 
 .. code-block:: python
 
-    for tag in tags.keys():
+    for tag, value in tags.items():
         if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-            print "Key: %s, value %s" % (tag, tags[tag])
+            print(f"Key: {tag}, value {value}")
 
 An ``if`` statement is used to avoid printing out a few of the tags that tend to be long or boring.
 
@@ -119,7 +135,19 @@ Pass the ``-q`` or ``--quick`` command line arguments, or as:
 
 .. code-block:: python
 
-    tags = exifread.process_file(f, details=False)
+    tags = exifread.process_file(file_handle, details=False)
+
+To process makernotes only, without extracting the thumbnail image (if any):
+
+.. code-block:: python
+
+    tags = exifread.process_file(file_handle, details=True, extract_thumbnail=False)
+
+To extract the thumbnail image (if any), without processing makernotes:
+
+.. code-block:: python
+
+    tags = exifread.process_file(file_handle, details=False, extract_thumbnail=True)
 
 Stop at a Given Tag
 ===================
@@ -130,7 +158,7 @@ Pass the ``-t TAG`` or ``--stop-tag TAG`` argument, or as:
 
 .. code-block:: python
 
-    tags = exifread.process_file(f, stop_tag='TAG')
+    tags = exifread.process_file(file_handle, stop_tag='TAG')
 
 where ``TAG`` is a valid tag name, ex ``'DateTimeOriginal'``.
 
@@ -145,7 +173,25 @@ Pass the ``-s`` or ``--strict`` argument, or as:
 
 .. code-block:: python
 
-    tags = exifread.process_file(f, strict=True)
+    tags = exifread.process_file(file_handle, strict=True)
+
+Built-in Types
+==============
+
+For easier serialization and programmatic use, this option returns a dictionary with values in built-in Python types
+(int, float, str, bytes, list, None) instead of `IfdTag` objects.
+
+Pass the ``-b`` or ``--builtin`` argument, or as:
+
+.. code-block:: python
+
+    tags = exifread.process_file(file_handle, builtin_types=True)
+
+For direct JSON serialization, combine this option with ``details=False`` to avoid bytes in the output:
+
+.. code-block:: python
+
+    json.dumps(exifread.process_file(file_handle, details=False, builtin_types=True))
 
 Usage Example
 =============
@@ -158,13 +204,14 @@ This example shows how to use the library to correct the orientation of an image
     import exifread
     from PIL import Image
     import logging
-    
+
     def _read_img_and_correct_exif_orientation(path):
         im = Image.open(path)
         tags = {}
-        with open(path, 'rb') as f:
-            tags = exifread.process_file(f, details=False)
-        if "Image Orientation" in tags.keys():
+        with open(path, "rb") as file_handle:
+            tags = exifread.process_file(file_handle, details=False)
+
+        if "Image Orientation" in tags:
             orientation = tags["Image Orientation"]
             logging.basicConfig(level=logging.DEBUG)
             logging.debug("Orientation: %s (%s)", orientation, orientation.values)
@@ -189,9 +236,18 @@ This example shows how to use the library to correct the orientation of an image
                 im = im.transpose(Image.ROTATE_90)
         return im
 
-Credit
-******
 
-A huge thanks to all the contributors over the years!
+License
+*******
+
+Copyright © 2002-2007 Gene Cash
+
+Copyright © 2007-2025 Ianaré Sévi and contributors
+
+A **huge** thanks to all the contributors over the years!
 
 Originally written by Gene Cash & Thierry Bousch.
+
+Available as open source under the terms of the **BSD-3-Clause license**.
+
+See the LICENSE file for details.

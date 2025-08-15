@@ -1,0 +1,19 @@
+"""
+Makernote (proprietary) tag definitions for DJI cameras
+
+Based on https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/DJI.pm
+"""
+from typing import Dict, Tuple
+
+TAGS: Dict[int, Tuple] = {
+    0x01: ("Make",),
+    0x03: ("SpeedX",),
+    0x04: ("SpeedY",),
+    0x05: ("SpeedZ",),
+    0x06: ("Pitch",),
+    0x07: ("Yaw",),
+    0x08: ("Roll",),
+    0x09: ("CameraPitch",),
+    0x0A: ("CameraYaw",),
+    0x0B: ("CameraRoll",),
+}
